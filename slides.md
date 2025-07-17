@@ -10,9 +10,9 @@ colorSchema: light
 
 # 強化学習講義 第5回
 
-モデルをサンプル近似する強化学習
+シミュレータがあるときの強化学習アルゴリズム
 
-コード：TODO
+コード：[Google Colab](https://colab.research.google.com/drive/1PHNmbjp6uibp398A9Ds90uVuNiWSUn72?usp=sharing)
 
 用語・表記：[メインスライド](https://syuntoku14.github.io/Foundations-of-RL)を参照
 
