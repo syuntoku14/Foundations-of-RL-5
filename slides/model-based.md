@@ -35,7 +35,7 @@ $$
 
 <div style="font-size: 0.7em; text-align: left; position: absolute; bottom: 5px; left: 20px;">
 
-[1] もしくは$P$に相当する何らかの情報．例えば最近の「世界モデル」などは，次に来る画像を推定するモデルを構築することがある．
+[1] もしくは$P$に相当する何らかの情報．例えば最近の「世界モデル」などは，次に来る画像を推定するモデルを構築する（場合がある）．
 
 </div>
 
@@ -359,7 +359,7 @@ $$
 </div>
 
 
-👨‍🏫 簡単な例で確認するよ．
+👨‍🏫 簡単な例でUnion Boundを確認しよう．
 
 * ４月のあるn日目で電車が遅延する事象を$A_n$とする．
 * 遅延する確率が$0.01$以下だとしよう．つまり，$\mathbb{P}(A_n) \leq 0.01$．
@@ -409,7 +409,7 @@ V^{\widehat{\pi}^\star}_\gamma
 \geq V^\star_\gamma - \frac{2\gamma}{(1 - \gamma)^3} \sqrt{\frac{ \log (2|\mathcal{S}||\mathcal{A}|\delta^{-1})}{2N}} \boldsymbol{1}
 $$
 
-👨‍🏫 よって，十分大きい$N$で二項目が０に近づき，$\widehat{\pi}^\star$がほぼ最適方策であることが分かる．
+👨‍🏫 よって，十分大きい$N$で二項目が０に近づき，$\widehat{\pi}^\star$が最適方策に近づくことがわかる．
 
 </div>
 
@@ -437,11 +437,11 @@ for N in range(1, 150):
 
 plt.plot(V_gaps)
 plt.xlabel('Sample Size N')
-plt.ylabel(r'$|V^{\widehat{\pi}^\star}_\gamma - V^\star_\gamma|$')
+plt.ylabel(r'$\|V^{\widehat{\pi}^\star}_\gamma - V^\star_\gamma\|_\infty$')
 ```
 
 <figure style="position: absolute; top: 30%; left: 70%; width: 250px; text-align: center;">
-  <img src="./figures/model-based-exp-result.png" alt="Image description" style="width: 100%;">
+  <img src="./figures/model-based-exp.png" alt="Image description" style="width: 100%;">
   <figcaption style="font-size: 0.8em; word-wrap: break-word; text-align: center;">
 
   👨‍🏫 こんな感じの図が出力されるはず．

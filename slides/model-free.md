@@ -90,7 +90,7 @@ def model_free_rl(mdp: MDP, N: int, K: int = 1000):
 
 ---
 
-## モデルフリー強化学習の性能証明 ①
+## モデルフリー強化学習の性能証明
 
 実装したアルゴリズムは価値反復法に近似誤差$\epsilon_{k+1} \in \R^{\mathcal{S}\times \mathcal{A}}$が乗った形とみなせる：
 
@@ -105,7 +105,7 @@ $$
 
 <div style="border: 2px solid #000; padding-top: 1px; padding-left: 10px; margin-top: 5px;">
 
-🤔 サンプル数$N$が増えると$\epsilon_{k+1}$は小さくなりそうだ．これは後で証明する．
+🤔 サンプル数$N$が増えると$\epsilon_{k+1}$は小さくなる．これはモンテカルロ近似そのものなので，証明は省略<sup>1</sup>
 $$
 \frac{1}{N}\sum_{i=1}^N \max_{a'} Q_k(s'_i, a')  \approx \sum_{s'} P(s' \rvert s, a) \max_{a'} Q_k(s', a')
 $$
@@ -118,12 +118,17 @@ $Q_k$の更新で生じた誤差$\epsilon_k$は$Q_{k+1}$に残り，$Q_{k+2}$に
 
 🤔 $|\epsilon_k| \leq \epsilon$としよう．どれくらい誤差$\epsilon$が小さくなれば，$\pi_K$は最適方策に近くなるだろう？
 
+</div>
+
+<div style="font-size: 0.7em; text-align: left; position: absolute; bottom: -10px; left: 20px;">
+
+[1] Hoeffdingの不等式と（Covering numberによる）Union boundを使う．ややこしいので省略する or 後日追記しておく．
 
 </div>
 
 ---
 
-## モデルフリー強化学習の性能証明 ②：誤差伝搬解析
+## モデルフリー強化学習の性能証明：誤差伝搬解析
 
 
 $\pi_k$と最適価値関数の差は次のように分解できる．任意の$s, a$について$Q^\star_\gamma \geq Q^{\pi_k}_\gamma$なので，
@@ -146,6 +151,10 @@ $$
 </div>
 
 ---
+hideInToc: true
+---
+
+## $\alpha_k$のバウンド
 
 まず$\alpha_k$をみてみよう．
 
@@ -157,19 +166,29 @@ $$
 =& Q^\star_\gamma - T_{\pi^\star}Q_{k} + \underbrace{T_{\pi^\star}Q_{k} - T_{\pi_{k+1}}Q_{k}}_{\leq 0} 
 \quad &&\text{（$\pi_{k+1}$は$Q_{k}$の貪欲方策なので$\leq 0$が成立）}\\
 \leq &T_{\pi^\star} Q^\star_\gamma - T_{\pi^\star}Q_{k} 
-= \gamma \bar{P}_{\pi^\star} (Q^\star_\gamma - Q_{k}) \quad&& \text{（ベルマン作用素の定義）}\\
+= \gamma \bar{P}_{\pi^\star} (Q^\star_\gamma - Q_{k}) \quad&& \text{（ベルマン作用素の定義）}^1\\
 =& \gamma \bar{P}_{\pi^\star} \underbrace{(Q^\star_\gamma - (Q_{k} - \epsilon_k))}_{\alpha_k} - \gamma \bar{P}_{\pi^\star} \epsilon_k
 \end{aligned}
 $$
 
-$\bar{P}_{\pi^\star}$は確率行列なので，
+$\bar{P}_{\pi^\star}$は確率行列なので，$\sum_{s', a'} \bar{P}_{\pi^\star}(s', a' \rvert s, a) = 1$が各$(s, a)$で成り立つ．よって，
 
 $$
 \max_{s, a}\alpha_{k+1}(s, a) \leq \gamma \max_{s, a}\alpha_k(s, a) + \gamma \max_{s, a}|\epsilon_k(s, a)|
 \leq \gamma \max_{s, a}\alpha_k(s, a) + \gamma \epsilon
 $$
 
-再帰的に$\max_{s, a}\alpha_k(s, a)$を変形すると，（$|r(s, a)| \leq 1$ならば，）次のバウンドが得られる．
+<div style="font-size: 0.7em; text-align: left; position: absolute; bottom: 5px; left: 20px;">
+
+[1] 任意の$q_1, q_2$について，$T_{\pi} q_1 - T_{\pi}q_2 = \gamma \bar{P}_{\pi} (q_1 - q_2)$が成り立つ．確かめてほしい．
+
+</div>
+
+---
+hideInToc: true
+---
+
+再帰的に$\max_{s, a}\alpha_k(s, a)$を変形すると，次のバウンドが得られる．
 
 $$
 \begin{aligned}
@@ -178,12 +197,25 @@ $$
 \leq \gamma^2 \max_{s, a}\alpha_{k-2}(s, a) + (\gamma+\gamma^2) \epsilon \\
 &\leq \dots 
 \leq \gamma^k \max_{s, a}\alpha_0(s, a) + \frac{\gamma}{1-\gamma} \epsilon
-\leq {\color{red}\frac{2 \gamma}{1-\gamma} \epsilon}
-\quad \text{（$Q_0$を０で初期化した場合）}
 \end{aligned}
 $$
 
+ここで，$Q_0$を０で初期化して，かつ報酬が$\|r\|_\infty \leq 1$のとき，$\alpha_0 = Q^\star_\gamma - \underbrace{Q_{0}}_{=0} - \underbrace{\epsilon_{0}}_{=0} \leq 1 / (1-\gamma)$が成り立つ．
+よって，
+
+$$
+\begin{aligned}
+\max_{s, a}\alpha_{k}(s, a) \leq \frac{\gamma^k}{1-\gamma} + \frac{\gamma}{1-\gamma} \epsilon
+\end{aligned}
+$$
+
+<!-- \quad \text{（）} -->
+
 ---
+hideInToc: true
+---
+
+## $\beta_k$のバウンド
 
 続いて$\beta_k$をバウンドする．
 
@@ -230,7 +262,7 @@ $$
 &T_{\pi_{k}} (Q_k - \epsilon_k + \epsilon_k)(s, a) \\
 = &r(s, a) + \sum_{s', a'} \bar{P}_{\pi_k}(s', a' \rvert s, a) (Q_k(s', a') - \epsilon_k(s', a') + \epsilon_k(s', a'))\\
 = &r(s, a) + \sum_{s', a'} \bar{P}_{\pi_k}(s', a' \rvert s, a) (Q_k(s', a') - \epsilon_k(s', a'))
- - \sum_{s', a'} \bar{P}_{\pi_k}(s', a' \rvert s, a) \epsilon_k(s', a') \\
+ + \sum_{s', a'} \bar{P}_{\pi_k}(s', a' \rvert s, a) \epsilon_k(s', a') \\
 \end{aligned}
 $$
 
@@ -255,7 +287,7 @@ $$
 \end{aligned}
 $$
 
-再帰的に$\max_{s, a}c_k(s, a)$を変形すると，（$|r(s, a)| \leq 1$ならば，）次のバウンドが得られる．
+再帰的に$\max_{s, a}c_k(s, a)$を変形すると，次のバウンドが得られる．
 
 $$
 \begin{aligned}
@@ -264,20 +296,78 @@ $$
 &\leq \gamma^2 \max_{s, a} c_{k-2}(s, a) + (1+\gamma) (1 + \gamma) \epsilon
 \leq \ldots\\
 &\leq \gamma^k  \max_{s, a} c_{0}(s, a) + \frac{1+\gamma}{1-\gamma} \epsilon
-\leq \gamma^k + \frac{2}{1-\gamma} \epsilon
 \end{aligned}
 $$
 
- ---
+ここで，$c_0(s, a) = Q_0(s, a) - T_{\pi_q} Q_0(s, a) = -r(s, a)$なので，$|r(s, a)| \leq 1$ならば，
+
+$$
+\max_{s, a}c_k(s, a) \leq \gamma^k + \frac{1+\gamma}{1-\gamma} \epsilon
+$$
+
+---
+hideInToc: true
+---
+
+<div style="border: 2px solid #000; padding-top: 1px; padding-left: 10px; margin-top: 5px; background-color: #ffffe0;">
 
 よって，今までの結果を全部合体すると，
 
 $$
 \begin{aligned}
 \|Q^\star_\gamma - Q^{\pi_k}_\gamma \|_\infty 
-&\leq \max_{s, a} \alpha_k(s, a) + \max_{s, a} \beta_k(s, a)\\
-&\leq \frac{2 \gamma}{1-\gamma} \epsilon + \frac{\gamma}{1-\gamma} \max_{s, a} c_k(s, a)
-\leq \frac{2 \gamma}{1-\gamma} \epsilon + \frac{\gamma^{k+1}}{1-\gamma} + \frac{2}{(1-\gamma)^2}\epsilon
+&\leq \underbrace{\max_{s, a} \alpha_k(s, a)}_{\leq \frac{\gamma^k}{1-\gamma} + \frac{\gamma}{1-\gamma}\epsilon} + \underbrace{\max_{s, a} \beta_k(s, a)}_{\frac{\gamma}{1-\gamma}\max_{s, a}c_k(s, a)}\\
+& \leq 
+\frac{\gamma^k}{1-\gamma} + \frac{\gamma}{1-\gamma}\epsilon
++ \frac{\gamma}{1-\gamma}\underbrace{\max_{s, a}c_k(s, a)}_{\leq \gamma^k + \frac{1+\gamma}{1-\gamma} \epsilon}\\
+& \leq 
+\underbrace{\frac{2\gamma^k}{1-\gamma}}_{価値反復法の収束} + \underbrace{\frac{\gamma}{1-\gamma}\epsilon + \frac{\gamma(1+\gamma)}{(1-\gamma)^2} \epsilon}_{誤差の伝搬}
 \end{aligned}
 $$
+
+* 一項目は価値反復法自体の収束速度．イテレーション$k$を増やすと$0$に収束する．
+* 二項目は近似によって生じた誤差．$\epsilon$が小さくなると，この項も小さくなる．\
+（$N$が大きくなると$\epsilon$が小さくなる．）
+
+</div>
+
+---
+
+## 実装：モデルフリー強化学習とサンプル数$N$の関係
+
+実際にサンプル数$N$とイテレーション数$K$が大きくなると性能が上がるか見てみよう．
+
+```python
+import matplotlib.pyplot as plt
+
+Q_star, _ = value_iteration_q(mdp, 1e-4)
+V_star = np.max(Q_star, axis=1)  # 真の最適価値関数
+for K in [5, 100]:
+  V_gaps = []  # 最適価値関数とのギャップを保存するリスト
+  samples = []
+
+  for N in range(1, 100, 10):
+      pol_hat = model_free_rl(mdp, N, K)
+      V_pol_hat = evaluate_policy(mdp, pol_hat)
+      V_gap = np.max(np.abs(V_star - V_pol_hat))  # 最適価値関数とのギャップ
+      V_gaps.append(V_gap)
+      samples.append(N)
+
+  plt.plot(samples, V_gaps, label=r"$K=$"+str(K))
+
+plt.xlabel('Sample Size N')
+plt.ylabel(r'$\|V^{\pi_K}_\gamma - V^\star_\gamma\|_\infty$')
+plt.legend()
+```
+
+<figure style="position: absolute; top: 40%; left: 69%; width: 250px; text-align: center;">
+  <img src="./figures/model-free-exp.png" alt="Image description" style="width: 120%;">
+  <figcaption style="font-size: 0.8em; word-wrap: break-word; text-align: center; width: 120%;">
+
+  👨‍🏫 こんな感じの図が出力されるはず．\
+  $K$と$N$が大きいほうが最適方策に近い．
+
+  </figcaption>
+</figure>
+
 

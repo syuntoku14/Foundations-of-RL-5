@@ -95,8 +95,7 @@ hideInToc: true
 **問題設定**
 
 * 今回は簡単のために，$r$は既知だが，$P$がわからない場合を考える<sup>1</sup>．
-* $(s, a)$が与えられると，次の状態$s'$を$P(\cdot \rvert s, a)$からサンプルするシミュレータがあるとする<sup>2</sup>．\
-最近のシミュレータにはこの機能が備わっているものがある．（例：[Brax](https://github.com/google/brax) シミュレータ）
+* 各$(s, a)$について，次の状態$s'$を$P(\cdot \rvert s, a)$からサンプルするシミュレータがあるとする<sup>2</sup>．
 * 🤔 シミュレータでの最適方策$\pi^\star$を求めるにはどうすればよいだろうか？ 
 
 <figure style="position: absolute; top: 3%; left: 80%; width: 130px; text-align: center;">
@@ -121,7 +120,8 @@ hideInToc: true
 [1] 一般に，$P$がわからない場合の方が難しい．$r$は$|\mathcal{S}||\mathcal{A}|$個しかパラメタがないが，$P$は$|\mathcal{S}|^2|\mathcal{A}|$個のパラメタがある．\
 また，$r$は基本的にエンジニアが設計するので，既知な場合が多い．\
 [2] このようなシミュレータを，強化学習の理論界隈では**Generative Model**と呼ぶ．
-[Reinforcement Learning: Theory and Algorithms](https://rltheorybook.github.io/)など参照．
+[Reinforcement Learning: Theory and Algorithms](https://rltheorybook.github.io/)など参照．\
+最近のシミュレータにはGenerative Modelが備わっている場合がある．（例：[Brax](https://github.com/google/brax) シミュレータ）
 
 </div>
 
@@ -132,3 +132,31 @@ src: slides/model-based.md
 ---
 src: slides/model-free.md
 ---
+
+---
+
+## まとめ
+
+今回は「$P$が未知だが，次状態をサンプルするシミュレータがある」ときの強化学習アルゴリズムを学んだ．
+
+* **モデルベース強化学習**：$P$をサンプルで近似してプランニングアルゴリズムを実行する方法．テーブルMDPならば$|\mathcal{S}|^2|\mathcal{A}|$サイズのメモリが必要．
+  * 必要なサンプル数は**Hoeffdingの不等式**を使って導出できる（これは次回の探索の話でも使う！）
+* **モデルフリー強化学習**：$P$を近似せずに$\pi^\star$を求める方法．テーブルMDPならば$|\mathcal{S}||\mathcal{A}|$サイズのメモリが必要．
+今回は価値反復法をサンプルで近似した．性能保証は**誤差伝搬解析**をして示した．
+
+<br>
+
+<div style="border: 2px solid #000; padding-top: 1px; padding-left: 10px; margin-top: 5px; background-color: #ffffe0;">
+
+今回のアルゴリズムはシミュレータを使って次の処理を行っている：
+
+```python
+    for (s, a) in product(range(mdp.S), range(mdp.A)):
+        next_states = np.random.choice(mdp.S, p=mdp.P[s, a], size=N)  # 各状態行動で，次状態をN個サンプル
+```
+ 
+🤔 これが出来ない場合はどうすればよいだろう？現実世界にこうした「リセット機能」はない…
+
+次回は**探索**によって最適方策を求める方法を学ぶ．
+
+</div>
