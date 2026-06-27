@@ -71,7 +71,7 @@ $N$が$\pi^\star$の計算に与える影響を評価するために，今回は
 
 <div style="border: 2px solid #000; padding-top: 1px; padding-left: 10px; margin-top: 5px; background-color: rgb(220, 241, 255);">
 
-**大数の弱法則**：$X_1, X_2, \ldots, X_N$を平均$\mu$かつ分散$\sigma^2$の独立同分布な確率変数とする．\
+**補題（大数の弱法則）**：$X_1, X_2, \ldots, X_N$を平均$\mu$かつ分散$\sigma^2$の独立同分布な確率変数とする．\
 $\hat{\mu}_N = \frac{1}{N}\sum_{i=1}^N X_i$とおくと，$\hat{\mu}_N$ が $\mu$ から $\epsilon$ 以上ずれる確率が $N\to\infty$ で $0$ に収束する.<sup>[1]</sup> つまり，
 $$
 \forall \epsilon > 0, \quad \lim_{N\to\infty} \mathbb{P}\left(\left|\hat{\mu}_N - \mu\right| > \epsilon\right) = 0
@@ -103,7 +103,7 @@ $$
 
 <div style="border: 2px solid #000; padding-top: 1px; padding-left: 10px; margin-top: 5px; background-color: rgb(220, 241, 255);">
 
-**中心極限定理**：$X_1, X_2, \ldots, X_N$を平均$\mu$かつ分散$\sigma^2$の独立同分布な確率変数とする．\
+**補題（中心極限定理）**：$X_1, X_2, \ldots, X_N$を平均$\mu$かつ分散$\sigma^2$の独立同分布な確率変数とする．\
 その総和と正規化された総和を
 $$
 S_N \coloneqq \sum_{i=1}^N X_i
@@ -162,7 +162,7 @@ $$
 
 <div style="border: 2px solid #000; padding-top: 1px; padding-left: 10px; margin-top: 5px; background-color: rgb(220, 241, 255);">
 
-**Hoeffdingの不等式**：$X_1, X_2, \ldots, X_N$を平均$\mu$の独立な確率変数とし，$X_i-\mu$が$\sigma$-subgaussianであるとする．Subgaussian変数は次ページで説明するが，簡単には「$X_i$の分布の裾が平均$\mu$の周りで急速に減少する」ことを意味する．
+**補題（Hoeffdingの不等式）**：$X_1, X_2, \ldots, X_N$を平均$\mu$の独立な確率変数とし，$X_i-\mu$が$\sigma$-subgaussianであるとする．Subgaussian変数は次ページで説明するが，簡単には「$X_i$の分布の裾が平均$\mu$の周りで急速に減少する」ことを意味する．
 
 $\hat{\mu}_N = \frac{1}{N}\sum_{i=1}^N X_i$を標本平均とする．このとき，任意の$\varepsilon > 0$に対して
 $$
@@ -188,7 +188,7 @@ $$
 
 <div style="border: 2px solid #000; padding-top: 1px; padding-left: 10px; margin-top: 5px; background-color: rgb(220, 241, 255);">
 
-**補題** 平均0の確率変数$X$が$\sigma$-subgaussianであるとき，次が成立する<sup>[1]</sup>：
+**補題（Subgaussianの裾）** 平均0の確率変数$X$が$\sigma$-subgaussianであるとき，次が成立する<sup>[1]</sup>：
 
 $$
 \mathbb{P}(|X| \geq \varepsilon) \leq 2\exp\left(-\frac{\varepsilon^2}{2 \sigma^2}\right), \quad \forall \varepsilon > 0
@@ -240,7 +240,7 @@ $$
 
 <div style="border: 2px solid #000; padding-top: 1px; padding-left: 10px; margin-top: 5px; background-color: rgb(220, 241, 255);">
 
-**Union Bound**<sup>1</sup>：事象$A_1, A_2, \ldots, A_n$に対して，次が成り立つ：
+**補題（Union Bound）**<sup>1</sup>：事象$A_1, A_2, \ldots, A_n$に対して，次が成り立つ：
 
 $$
 \mathbb{P}\left(A_1 \cup A_2 \cup \ldots \cup A_n\right) \leq \mathbb{P}(A_1) + \mathbb{P}(A_2) + \ldots + \mathbb{P}(A_n)
@@ -274,3 +274,24 @@ $$
 
 </div>
 
+---
+
+## Hoeffdingの不等式の証明
+
+Hoeffdingの不等式は次のSubgaussianの性質を使えばすぐに証明できる．
+
+<div style="border: 2px solid #000; padding-top: 1px; padding-left: 10px; margin-top: 5px; background-color: rgb(220, 241, 255);">
+
+**補題（Subgaussianの性質２）** 平均0の確率変数$X, X_1, X_2$,がそれぞれ$\sigma, \sigma_1, \sigma_2$-subgaussianであるとき，
+
+1. $X$の分散は$\sigma^2$以下である：$\mathbb{V}(X) \leq \sigma^2$
+2. 任意の$c \in \mathbb{R}$に対して，$cX$は$|c|\sigma$-subgaussianである
+3. $X_1 + X_2$は$\sqrt{\sigma_1^2 + \sigma_2^2}$-subgaussianである
+
+</div>
+
+**Hoeffdingの不等式の証明**：$X_1, X_2, \ldots, X_N$を平均$\mu$の独立な確率変数とし，$X_i-\mu$が$\sigma$-subgaussianであるとする．標本平均$\hat{\mu}_N = \frac{1}{N}\sum_{i=1}^N X_i$について，上の補題から，$\hat{\mu}_N - \mu = \frac{1}{N}\sum_{i=1}^N (X_i - \mu)$は$\frac{\sigma}{\sqrt{N}}$-subgaussianである．最後に，Subgaussianの裾確率の補題から，任意の$\varepsilon > 0$に対して
+$$
+\mathbb{P}(|\hat{\mu}_N - \mu| \geq \varepsilon) \leq 2\exp\left(-\frac{N \varepsilon^2}{2 \sigma^2}\right), \quad \forall \varepsilon > 0
+$$
+よってHoeffdingの不等式が得られる．
