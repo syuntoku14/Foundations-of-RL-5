@@ -12,6 +12,8 @@ colorSchema: light
 
 確率論の道具と集中不等式
 
+用語・表記：[メインスライド](https://syuntoku14.github.io/Foundations-of-RL)を参照
+
 <!--
 ほげほげ
 -->
