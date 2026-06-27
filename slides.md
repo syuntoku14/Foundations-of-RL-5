@@ -8,7 +8,7 @@ lineNumbers: true
 colorSchema: light
 ---
 
-# 強化学習講義 第5回
+# 強化学習講義 第五回
 
 確率論の道具と集中不等式
 
@@ -143,5 +143,5 @@ hideInToc: true
 
 
 ---
-src: ./slides/central-limit-theorem.md
+src: ./slides-central-limit-theorem.md
 ---
