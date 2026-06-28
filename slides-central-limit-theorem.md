@@ -26,7 +26,6 @@ hideInToc: true
 <br>
 
 <div style="border: 2px solid #000; padding-top: 1px; padding-left: 10px; margin-top: 5px; background-color: #ffffe0;">
-
 🤔 次状態のサンプルの標本平均を使って$P$を推定してみよう．
 
 1. 各$(s, a)\in \mathcal{S}\times\mathcal{A}$に対して，シミュレータから次状態$s'$を$N$個サンプルする．$(s'_1, s'_2, \ldots, s'_N)$
@@ -135,11 +134,10 @@ $$
 $$
 \sqrt{N}\,X_N = \sqrt{N}\bigl(\widehat{P}(s'\rvert s,a)-P(s'\rvert s,a)\bigr) \xrightarrow{d} \mathcal{N}\bigl(0,\;P(s'\rvert s,a)(1-P(s'\rvert s,a))\bigr).
 $$
-したがって近似的に
+したがって，$\hat{P}(s'\rvert s,a)-P(s'\rvert s,a)$は$\mathcal{N}(0,\;P(s'\rvert s,a)(1-P(s'\rvert s,a))/N)$に従うと近似できる．正規分布表を使って，95%信頼区間を作ると，次のように書ける：
 $$
-\widehat{P}(s'\rvert s,a) \approx P(s'\rvert s,a) \pm z_{\alpha/2}\sqrt{\frac{P(s'\rvert s,a)(1-P(s'\rvert s,a))}{N}},
+\widehat{P}(s'\rvert s,a) \approx P(s'\rvert s,a) \pm z\sqrt{\frac{P(s'\rvert s,a)(1-P(s'\rvert s,a))}{N}}  \quad \text{ここで } z \approx 1.96
 $$
-となる．例えば正規分布の95%信頼区間を作るときは$z_{0.025}\approx 1.96$を使う．
 
 <div style="font-size: 0.7em; text-align: left; position: absolute; bottom: 5px; left: 20px;">
 
@@ -172,6 +170,8 @@ $$
 </div>
 
 ---
+
+## 証明の準備：Subgaussian変数
 
 <div style="border: 2px solid #000; padding-top: 1px; padding-left: 10px; margin-top: 5px; background-color: rgb(220, 241, 255);">
 
@@ -229,14 +229,14 @@ $$
 
 👨‍🏫 証明中に$\mathbb{P}(|X| \geq \varepsilon) \leq \mathbb{P}(X \geq \varepsilon) + \mathbb{P}(-X \geq \varepsilon)$を使った．
 
-このように， 「どれか1つでも悪いことが起きる確率」を「それぞれの悪いことが起きる確率の和」で上からバウンドするテクニックを**Union Bound**と呼ぶ．次ページで説明する．
+このように， 「どれか1つでも悪い事象が起きる確率」を「それぞれの悪い事象が起きる確率の和」で上からバウンドするテクニックを**Union Bound**と呼ぶ．次ページで説明する．
 
 </div>
 
 
 ---
 
-## Union Bound
+## 証明の準備：Union Bound
 
 <div style="border: 2px solid #000; padding-top: 1px; padding-left: 10px; margin-top: 5px; background-color: rgb(220, 241, 255);">
 
@@ -286,7 +286,7 @@ Hoeffdingの不等式は次のSubgaussianの性質を使えばすぐに証明で
 
 1. $X$の分散は$\sigma^2$以下である：$\mathbb{V}(X) \leq \sigma^2$
 2. 任意の$c \in \mathbb{R}$に対して，$cX$は$|c|\sigma$-subgaussianである
-3. $X_1 + X_2$は$\sqrt{\sigma_1^2 + \sigma_2^2}$-subgaussianである
+3. $X_1 + X_2$は$\sqrt{\sigma_1^2 + \sigma_2^2}$-subgaussianである．証明は省略．
 
 </div>
 
@@ -295,3 +295,97 @@ $$
 \mathbb{P}(|\hat{\mu}_N - \mu| \geq \varepsilon) \leq 2\exp\left(-\frac{N \varepsilon^2}{2 \sigma^2}\right), \quad \forall \varepsilon > 0
 $$
 よってHoeffdingの不等式が得られる．
+
+---
+
+## Hoeffdingの不等式の使用例 （シミュレータの誤差推定）
+
+<div style="border: 2px solid #000; padding-top: 1px; padding-left: 10px; margin-top: 5px;">
+
+1. 各$(s, a)\in \mathcal{S}\times\mathcal{A}$に対して，シミュレータから次状態$s'$を$N$個サンプルする．$(s'_1, s'_2, \ldots, s'_N)$
+2. 集めたサンプルで「$(s, a)$から$s'$への遷移確率」を推定する：
+$$
+\widehat{P}(s' \rvert s, a) = \frac{1}{N} \sum_{i=1}^N \mathbb{I}[s'=s'_i]
+$$
+
+🤔 このとき，$N$がどれくらい大きければ，$\widehat{P}$は$P$に近くなるだろうか？例えば，どんな$N$なら
+$$
+\mathbb{P}\left(
+ \forall (s, a, s') \in \mathcal{S}\times\mathcal{A}\times\mathcal{S}; 
+  |\widehat{P}(s'\rvert s,a)-P(s'\rvert s,a)| \geq \varepsilon\right) \leq \delta
+$$
+が成り立つだろうか？<sup>[1]</sup>
+
+</div>
+
+<div style="font-size: 0.7em; text-align: left; position: absolute; bottom: 5px; left: 20px;">
+
+[1] つまり，確率$1-\delta$で，すべての$(s, a, s')$に対して推定誤差が$\varepsilon$以下になるような$N$を求めようとしている．
+
+</div>
+
+---
+
+まず，すべての$(s, a, s')$ではなく，ある1つの$(s, a, s')$にHoeffdingを使うことを考えてよう<sup>[1]</sup>．Hoeffdingは$X_i - 平均$が$\sigma$-subgaussianである独立な確率変数に対して成り立つ．
+我々が考える推定器$\hat{P}(s' \mid s, a)$は$X_i = \mathbb{I}[s'=s'_i]$の標本平均である．ここで，$X_i$は$1/2$-subgaussianであることが次の補題からわかる．
+
+<div style="border: 2px solid #000; padding-top: 1px; padding-left: 10px; margin-top: 5px; background-color: rgb(220, 241, 255);">
+
+**補題（色々なSubgaussian変数）**
+
+- $X$が平均0かつ分散$\sigma^2$のガウス分布に従うなら，$X$は$\sigma$-subgaussianである．
+- $X$が平均$0$かつ確率1で$X \in [a, b]$の範囲にあるなら<sup>[2]</sup>，$X$は$\frac{b-a}{2}$-subgaussianである．
+
+</div>
+
+よって，Hoeffdingの不等式から，固定された$(s, a, s')$と<sup>[2]</sup>任意の$\varepsilon > 0$に対して，次が成り立つ：
+$$
+\mathbb{P}(|\widehat{P}(s'\rvert s,a)-P(s'\rvert s,a)| \geq \varepsilon) \leq 2\exp\left(-2N\varepsilon^2\right)
+$$
+
+
+<div style="font-size: 0.7em; text-align: left; position: absolute; bottom: 5px; left: 20px;">
+
+[1] Union boundのページを思い出そう．「すべての$(s, a, s')$」を「４月のすべての日」と置き換えれば，Union Boundのページで説明した例と同じ状況だ．ここでは，すべての$(s, a, s')$に対して，「悪い事象（推定誤差が$\varepsilon$以上）」を回避したい．まず，「ある1つの$(s, a, s')$に対して悪い事象が起きる確率」を評価し，その後Union Boundを使って「すべての$(s, a, s')$に対して悪い事象が起きる確率」を上から抑えるのが自然な流れだ．\
+[2] 今回のように，一つの事象を指定するとき，「固定された〜」と表現する．
+
+</div>
+
+---
+
+今導出した
+$$
+\mathbb{P}(|\widehat{P}(s'\rvert s,a)-P(s'\rvert s,a)| \geq \varepsilon) \leq 2\exp\left(-2N\varepsilon^2\right)
+$$
+は，固定された$(s, a, s')$について成立するが，すべての$(s, a, s')$に対して同時に成立することは保証されない<sup>[1]</sup>．
+そこで，Union Boundを使おう．
+
+$$
+\begin{aligned}
+&\mathbb{P}\left(
+  \forall (s, a, s') \in \mathcal{S}\times\mathcal{A}\times\mathcal{S}; 
+  |\widehat{P}(s'\rvert s,a)-P(s'\rvert s,a)| \geq \varepsilon\right)\\
+\leq &
+\sum_{(s, a, s') \in \mathcal{S}\times\mathcal{A}\times\mathcal{S}}
+\mathbb{P}\left(
+  |\widehat{P}(s'\rvert s,a)-P(s'\rvert s,a)| \geq \varepsilon\right)
+\leq |\mathcal{S}|^2|\mathcal{A}| \cdot 2\exp\left(-2N\varepsilon^2\right)
+\end{aligned}
+$$
+よって，「すべての$(s, a, s')$に対して推定誤差が$\varepsilon$以下になる確率が$1-\delta$以上」になるためには，$N$を次のように選べばよい：
+
+$$
+N \geq \frac{1}{2\varepsilon^2}\log\frac{2|\mathcal{S}|^2|\mathcal{A}|}{\delta}
+$$
+
+
+<div style="font-size: 0.7em; text-align: left; position: absolute; bottom: 5px; left: 20px;">
+
+[1] 4月の例で言えば，前ページでは「4月6日に遅延する確率」を導出した．しかし，「30日間のうちにどれか1日でも遅延する確率」はまだ評価できていない．
+
+</div>
+
+---
+
+## Hoeffdingの不等式の使用例 （ABテスト）
+
