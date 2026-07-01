@@ -147,3 +147,44 @@ hideInToc: true
 ---
 src: ./slides-central-limit-theorem.md
 ---
+
+---
+
+## まとめ
+
+<br>
+
+- 今回は一定確率で正しい意思決定を保証するための道具として，**Hoeffdingの不等式**を紹介した．
+
+- Hoeffdingの不等式を使うと，ある推定器の誤差を確率$1-\delta$以上で$\varepsilon$以下に抑えるために必要なサンプル数$N$が評価できる．シミュレータの推定誤差の評価とABテストへの応用を紹介した．
+
+- 今回学んだ道具は，次回以降の講義で，強化学習アルゴリズムの性能保証を与えるために使う．\
+さらに，探索アルゴリズムを設計する際にも使用する．
+
+<span style="border: 2px solid #000; border-radius: 10px; padding: 5px 10px; background-color: #ffffe0; display: inline-block; position: absolute; top: 85%; left: 10%;">
+プランニング問題
+</span>
+
+<Arrow x1="260" y1="490" x2="400" y2="490" />
+<div style="position: absolute; top: 85%; left: 28%; text-align: center; font-size: 0.7em;">
+サンプル近似（探索）
+</div>
+
+<Arrow x1="260" y1="490" x2="400" y2="490" />
+<div style="position: absolute; top: 90%; left: 28%; text-align: center; font-size: 0.7em; color: red;">
+Hoeffdingの不等式
+</div>
+
+<span style="border: 2px solid #000; border-radius: 10px; padding: 5px 10px; background-color: #ffffe0; display: inline-block; position: absolute; top: 85%; left: 42%;">
+強化学習
+</span>
+
+<Arrow x1="520" y1="490" x2="670" y2="490" />
+<div style="position: absolute; top: 85%; left: 56%; text-align: center; font-size: 0.7em;">
+関数近似 （深層）
+</div>
+
+<span style="border: 2px solid #000; border-radius: 10px; padding: 5px 10px; background-color: #ffffe0; display: inline-block; position: absolute; top: 85%; left: 70%;">
+深層強化学習
+</span>
+

@@ -389,3 +389,77 @@ $$
 
 ## Hoeffdingの不等式の使用例 （ABテスト）
 
+**A/Bテストとは？**：Webサービスなどで，2つの施策（例：広告の推薦アルゴリズムなど）のうちどちらが優れているかを検証するための手法．
+
+<div style="border: 2px solid #000; padding-top: 1px; padding-left: 10px; margin-top: 5px; background-color: #ffffe0;">
+
+💻 例：新しい推薦アルゴリズム（B）は，既存のアルゴリズム（A）よりもクリック率を改善するか？
+
+- グループAには既存のアルゴリズムを，グループBには新しい推薦アルゴリズムを提示する．
+- 各ユーザーについて，クリックしたら$1$，しなければ$0$を記録する（ベルヌーイ確率変数）．
+- グループA，Bの真のクリック率をそれぞれ $p_A, p_B \in [0, 1]$ とする．
+- グループA, Bでそれぞれ$N$人ずつのユーザーからサンプルし，標本平均 $\hat{p}_A, \hat{p}_B$ を計算する．\
+$X_i$と$Y_i$をそれぞれグループA, Bの$i$番目のユーザーのクリック（0 or 1）として，
+$$
+\hat{p}_A = \frac{1}{N}\sum_{i=1}^N X_i, \qquad
+\hat{p}_B = \frac{1}{N}\sum_{i=1}^N Y_i
+$$
+
+🤔 $\hat{p}_B - \hat{p}_A > 0$だったとしても，$N$が有限である以上，本当に$p_B > p_A$なのか，それとも単なる偶然なのか区別できない．Hoeffdingの不等式を使って，この判断にどれくらいの信頼性があるかを定量化しよう．
+
+</div>
+
+---
+
+真のクリック率の改善効果を$\Delta$，観測された改善効果を$\hat{\Delta}$とおく：
+$$
+\Delta \coloneqq p_B - p_A, \qquad \hat{\Delta} \coloneqq \hat{p}_B - \hat{p}_A
+$$
+🤔 $\Delta > 0$ならば，Bの方がAよりもクリック率が高いことを意味する．$\Delta > 0$であることを正しく評価するためには，どれくらいのサンプル数$N$が必要だろうか？
+
+前ページの補題より$X_i-p_A$と$Y_i-p_B$はともに$1$-subgaussian．よって，Hoeffdingの不等式から，
+$$
+\mathbb{P}\left(|\hat{p}_A - p_A| \geq \frac{\varepsilon}{2}\right) \leq 2\exp\left(-\frac{N\varepsilon^2}{2}\right),
+\qquad
+\mathbb{P}\left(|\hat{p}_B - p_B| \geq \frac{\varepsilon}{2}\right) \leq 2\exp\left(-\frac{N\varepsilon^2}{2}\right)
+\quad \forall \varepsilon > 0
+$$
+
+Union Boundより，上の2つの事象のいずれかが起きる確率は，$4\exp(-N\varepsilon^2/2)$以下． 三角不等式から
+$$
+|\hat{\Delta}-\Delta| = |(\hat{p}_B-p_B)-(\hat{p}_A-p_A)| \leq |\hat{p}_B-p_B|+|\hat{p}_A-p_A| < \varepsilon
+$$
+であることと合わせて，次が得られる<sup>[1]</sup>：
+$$
+\mathbb{P}\left(|\hat{\Delta}-\Delta| \geq \varepsilon\right) \leq 4\exp\left(-\frac{N\varepsilon^2}{2}\right)
+$$
+
+<div style="font-size: 0.7em; text-align: left; position: absolute; bottom: -15px; left: 20px;">
+
+[1] $\mathbb{P}(|\hat\Delta-\Delta|\geq\varepsilon) \leq \mathbb{P}(|\hat p_A-p_A|\geq \varepsilon/2 \text{ または } |\hat p_B-p_B|\geq \varepsilon/2)$ であることと，上のUnion Boundを合わせている．
+
+</div>
+
+---
+
+得られた不等式を$\delta$について解くと，「確率$1-\delta$以上で$|\hat{\Delta}-\Delta| < \varepsilon$」を保証するために必要なサンプル数は
+$$
+N \geq \frac{2}{\varepsilon^2}\log\frac{4}{\delta}
+$$
+
+<div style="border: 2px solid #000; padding-top: 1px; padding-left: 10px; margin-top: 5px; background-color: #ffffe0;">
+
+**具体例：** 改善効果を$\varepsilon=0.02$の精度で，$\delta=0.05$（信頼度95%）で検出したいなら，
+$$
+N \geq \frac{2}{0.02^2}\log\frac{4}{0.05} \approx 5000 \times 1.9 \approx 9{,}500
+$$
+より，各グループ**約10,000人**ずつのユーザーが必要になる．
+
+</div>
+
+<br>
+
+**ポイント**：
+- $\varepsilon$が小さいほど（＝わずかな差も見逃したくないほど），必要なサンプル数$N$は$1/\varepsilon^2$のオーダーで増える．
+- 信頼度$1-\delta$を上げたい（$\delta$を小さくしたい）場合の$N$への影響は$\log(1/\delta)$と穏やか．
+
